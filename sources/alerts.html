@@ -1,0 +1,30 @@
+<!doctype html><meta charset=utf-8><link rel=stylesheet href=../shared/theme.css><script src=../config.js></script><script src=../shared/common.js></script>
+<style>.a{position:fixed;left:0;right:0;top:0;height:96px;padding:0 26px;display:flex;align-items:center;gap:20px;border-left:5px solid var(--accent);
+ opacity:0;transform:translateY(-16px);transition:all .6s cubic-bezier(.2,.8,.2,1)}.a.s{opacity:1;transform:none}
+.g{font-size:34px;color:var(--accent)}.n{font-size:30px;font-weight:700}.d{color:var(--mut);font-size:18px}</style>
+<div class="a panel" id=a><div class=g id=g></div><div><div class=k id=k></div><div class=n id=n></div><div class=d id=d></div></div></div>
+<script>const TY={follow:['New follower','♥'],sub:['New subscriber','★'],gift:['Gifted subs','✦'],cheer:['Bits','◆'],raid:['Raid','➜'],donation:['Donation','$'],member:['New member','★']};
+const Q=[];let busy=0;
+window.pushAlert=(t,name,det='')=>{Q.push([t,name,det]);run()};
+function run(){if(busy||!Q.length)return;busy=1;const[t,nm,dt]=Q.shift(),[l,gl]=TY[t]||[t,'•'];
+ k.textContent=l;g.textContent=gl;n.textContent=nm;d.textContent=dt;a.classList.add('s');
+ setTimeout(()=>{a.classList.remove('s');setTimeout(()=>{busy=0;run()},700)},+q('ms',5000))}
+// Local test: ?test=1 loops demo alerts. In OBS "Interact", press keys 1-5.
+if(q('test')){const D=[['follow','Ada'],['sub','Linus','Tier 1 · 3 months'],['raid','Grace','42 viewers'],['donation','Ken','$5.00'],['cheer','Dennis','100 bits']];
+ let i=0;setInterval(()=>pushAlert(...D[i++%5]),7000);addEventListener('keydown',e=>D[e.key-1]&&pushAlert(...D[e.key-1]))}
+// Generic bridge: ?ws=ws://localhost:8080 receiving JSON {type,name,detail}
+if(q('ws'))(function c(){const w=new WebSocket(q('ws'));w.onmessage=e=>{const j=JSON.parse(e.data);pushAlert(j.type,j.name,j.detail||'')};w.onclose=()=>setTimeout(c,4000)})();
+// Twitch EventSub over WebSocket (needs user token + client id; see README)
+async function es(){const H={Authorization:'Bearer '+C.twitchToken,'Client-Id':C.twitchClientId,'Content-Type':'application/json'};
+ const u=(await(await fetch('https://api.twitch.tv/helix/users?login='+C.twitchChannel,{headers:H})).json()).data[0].id;
+ const ws=new WebSocket('wss://eventsub.wss.twitch.tv/ws');ws.onclose=()=>setTimeout(es,5000);
+ ws.onmessage=e=>{const m=JSON.parse(e.data),t=m.metadata.message_type;
+  if(t=='session_welcome'){const S=(type,version,condition)=>fetch('https://api.twitch.tv/helix/eventsub/subscriptions',{method:'POST',headers:H,body:JSON.stringify({type,version,condition,transport:{method:'websocket',session_id:m.payload.session.id}})});
+   const b={broadcaster_user_id:u};S('channel.follow','2',{...b,moderator_user_id:u});['channel.subscribe','channel.subscription.gift','channel.cheer'].forEach(x=>S(x,'1',b));S('channel.raid','1',{to_broadcaster_user_id:u})}
+  if(t=='notification'){const ty=m.payload.subscription.type,v=m.payload.event;
+   if(ty=='channel.follow')pushAlert('follow',v.user_name);
+   if(ty=='channel.subscribe')pushAlert('sub',v.user_name,'Tier '+v.tier/1000);
+   if(ty=='channel.subscription.gift')pushAlert('gift',v.user_name||'Anonymous',v.total+' subs');
+   if(ty=='channel.cheer')pushAlert('cheer',v.user_name||'Anonymous',v.bits+' bits');
+   if(ty=='channel.raid')pushAlert('raid',v.from_broadcaster_user_name,v.viewers+' viewers')}}}
+if(C.twitchToken&&C.twitchClientId&&!q('test'))es();</script>

@@ -1,0 +1,6 @@
+<!doctype html><meta charset=utf-8><link rel=stylesheet href=../shared/theme.css><script src=../config.js></script><script src=../shared/common.js></script>
+<style>.w{position:fixed;inset:0;padding:0 24px;display:flex;align-items:center;gap:16px}.p{flex-direction:column;justify-content:center;align-items:stretch;gap:10px}
+.n{font-size:44px;line-height:1}.p .n{font-size:84px}</style>
+<div class="w panel" id=w><div class=k id=l></div><div class="num n" id=n></div><div class=bar id=b style="display:none"><i id=f></i></div></div>
+<script>const pn=q('style','pill')=='panel';w.classList.toggle('p',pn);if(pn)b.style.display='block';
+(function u(){const s=tick();l.textContent=s.l;n.textContent=fmt(s.t);if(s.f!=null)f.style.width=Math.min(100,s.f*100)+'%';setTimeout(u,250)})()</script>

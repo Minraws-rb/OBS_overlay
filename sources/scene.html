@@ -1,0 +1,13 @@
+<!doctype html><meta charset=utf-8><link rel=stylesheet href=../shared/theme.css><script src=../config.js></script><script src=../shared/common.js></script>
+<style>body{background:linear-gradient(135deg,var(--bg1),var(--bg2))}
+.g{position:fixed;width:1100px;height:1100px;left:-250px;top:-400px;border-radius:50%;background:radial-gradient(var(--accent),transparent 65%);opacity:.12;animation:d 30s ease-in-out infinite alternate}
+@keyframes d{to{transform:translate(500px,300px) scale(1.15)}}
+.m{position:fixed;left:140px;top:50%;transform:translateY(-50%);animation:i 1.2s ease both}.h{font-size:96px;font-weight:700;letter-spacing:-.02em;line-height:1.05;margin:14px 0}
+.s{font-size:30px;color:var(--mut)}.n{font-size:120px;margin-top:40px;color:var(--accent)}.f{position:fixed;left:140px;bottom:70px;color:var(--mut);font-size:22px}
+.t{position:fixed;left:48px;top:44px;font-size:34px;font-weight:700}.lg{position:fixed;right:70px;top:60px;height:64px;border-radius:50%}@keyframes i{from{opacity:0;transform:translateY(-46%)}}</style>
+<div class=g></div><img class=lg src=../assets/logo.png onerror="this.remove()"><div id=o></div>
+<script>const ty=q('type','bg'),S={starting:['STREAM STARTS IN','Starting soon',C.title,1],brb:['TAKING A SHORT BREAK','Be right back','Stretch, hydrate. Back in a moment.',1],
+outro:['STREAM ENDED','Thanks for watching',C.lastSub?'Latest supporter: '+C.lastSub:C.next,0],intermission:[q('k','Intermission'),q('t','Intermission'),q('s',''),+q('tm',0)]}[ty];
+if(ty=='face')o.innerHTML=`<div class=t>${esc(C.title)}</div>`;
+if(S)o.innerHTML=`<div class=m><div class="k acc">${esc(S[0])}</div><div class=h>${esc(S[1])}</div><div class=s>${esc(S[2])}</div>${S[3]?'<div class="n num" id=n></div>':''}</div><div class=f>${esc(ty=='outro'?C.next+'   ·   ':'')}${esc(C.socials)}</div>`;
+if(S&&S[3])(function u(){const s=tick();n.textContent=fmt(s.t);setTimeout(u,250)})()</script>

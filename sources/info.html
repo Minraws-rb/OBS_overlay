@@ -1,0 +1,8 @@
+<!doctype html><meta charset=utf-8><link rel=stylesheet href=../shared/theme.css><script src=../config.js></script><script src=../shared/common.js></script>
+<style>.w{position:fixed;inset:0;padding:14px 22px;display:flex;gap:18px;align-items:center;animation:i .8s ease both}
+.d{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:none}.t{font-size:24px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c{flex-direction:column;align-items:stretch;justify-content:center;gap:10px}.r{margin-left:auto;color:var(--mut);font-size:18px;white-space:nowrap}@keyframes i{from{opacity:0;transform:translateY(6px)}}</style>
+<div class="w panel" id=w></div>
+<script>const card=q('style','bar')=='card',p=+q('p',0);w.classList.toggle('c',card);
+w.innerHTML=card?`<div class=k>${esc(q('k','Current session'))}</div><div class=t>${esc(C.task)}</div><div class=bar><i style="width:${p}%"></i></div><div class=k>${esc(C.activity)} · ${p}%</div><div class=r style="margin:0">${esc(C.title)}</div>`
+:`<span class=d></span><div style="min-width:0"><div class=t>${esc(C.title)}</div><div class=k>${esc(C.activity)}</div></div><div class=r>${esc(C.handle)}</div>`</script>

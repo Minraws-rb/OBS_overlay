@@ -1,0 +1,27 @@
+<!doctype html><meta charset=utf-8><link rel=stylesheet href=../shared/theme.css><script src=../config.js></script><script src=../shared/common.js></script>
+<style>#c{position:fixed;inset:0;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;overflow:hidden}
+.bg{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+.m{font-size:21px;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.8);animation:i .4s ease both;word-break:break-word;transition:opacity 1s}
+.m b{font-weight:700;margin-right:8px}.m img{height:1.4em;vertical-align:middle}@keyframes i{from{opacity:0;transform:translateY(8px)}}</style>
+<div id=c></div>
+<script>if(q('bg','1')=='1')c.classList.add('bg');
+function add(n,col,html){const d=document.createElement('div');d.className='m';d.innerHTML=`<b style="color:${col||'var(--accent)'}">${esc(n)}</b>${html}`;c.append(d);
+ while(c.children.length>+q('max',14))c.firstChild.remove();const ttl=+q('ttl',90)*1000;if(ttl)setTimeout(()=>{d.style.opacity=0;setTimeout(()=>d.remove(),1000)},ttl)}
+// Twitch: anonymous read-only IRC over WebSocket. No login or API key.
+function twitch(){const ws=new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+ ws.onopen=()=>{ws.send('CAP REQ :twitch.tv/tags');ws.send('NICK justinfan'+(Math.random()*1e5|0));ws.send('JOIN #'+C.twitchChannel.toLowerCase())};
+ ws.onclose=()=>setTimeout(twitch,4000);
+ ws.onmessage=e=>e.data.split('\r\n').forEach(l=>{if(l.startsWith('PING'))return ws.send('PONG :tmi.twitch.tv');
+  const m=l.match(/^@(\S+) :(\w+)!\S+ PRIVMSG #\S+ :(.*)$/);if(!m)return;
+  const t=Object.fromEntries(m[1].split(';').map(x=>x.split('='))),em=[];
+  (t.emotes||'').split('/').filter(Boolean).forEach(x=>{const[id,pos]=x.split(':');pos.split(',').forEach(p=>{const[a,b]=p.split('-');em.push([+a,+b,id])})});
+  em.sort((a,b)=>b[0]-a[0]);const ch=[...m[3]];em.forEach(([a,b,id])=>ch.splice(a,b-a+1,'\u0001'+id+'\u0001'));
+  const html=ch.join('').split('\u0001').map((s,i)=>i%2?`<img src="https://static-cdn.jtvnw.net/emoticons/v2/${s}/default/dark/1.0">`:esc(s)).join('');
+  add(t['display-name']||m[2],t.color,html)})}
+// YouTube: Data API polling (needs ytApiKey + ytVideoId of the live stream)
+async function yt(){const A='https://www.googleapis.com/youtube/v3/',K='&key='+C.ytApiKey;
+ const id=(await(await fetch(A+'videos?part=liveStreamingDetails&id='+C.ytVideoId+K)).json()).items[0].liveStreamingDetails.activeLiveChatId;let tok='';
+ (async function p(){let w=6000;try{const r=await(await fetch(A+`liveChat/messages?part=snippet,authorDetails&liveChatId=${id}&pageToken=${tok}`+K)).json();
+  tok=r.nextPageToken;w=Math.max(r.pollingIntervalMillis||6000,6000);r.items.forEach(i=>i.snippet.displayMessage&&add(i.authorDetails.displayName,null,esc(i.snippet.displayMessage)))}catch(e){}setTimeout(p,w)})()}
+if(q('test'))setInterval(()=>add('viewer'+(Math.random()*99|0),null,'This is a sample chat message'),1800);
+else if(C.ytVideoId&&C.ytApiKey&&q('src')!='twitch')yt();else twitch();</script>
